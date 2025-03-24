@@ -1,2 +1,3 @@
-# gator
-boot.dev guided project
+# GATOR
+
+RSS feed aggregator for the command line.
