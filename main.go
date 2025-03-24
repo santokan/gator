@@ -1,30 +1,35 @@
 package main
 
 import (
-	"fmt"
 	"log"
+	"os"
 
 	"github.com/santokan/gator/internal/config"
 )
 
-func main() {
-	// Read the config file.
-	// Set the current user to "lane" (actually, you should use your name instead) and update the config file on disk.
-	// Read the config file again and print the contents of the config struct to the terminal.
+type state struct {
+	config *config.Config
+}
 
+func main() {
 	cfg, err := config.Read()
 	if err != nil {
 		log.Fatalf("error reading config file: %v", err)
 	}
+	s := &state{config: &cfg}
+	cmds := &commands{registeredCommands: make(map[string]func(*state, command) error)}
+	cmds.register("login", handlerLogin)
 
-	fmt.Printf("Read config: %+v\n", cfg)
-
-	err = cfg.SetUser("santokan")
-
-	cfg, err = config.Read()
-	if err != nil {
-		log.Fatalf("error reading config file: %v", err)
+	if len(os.Args) < 2 {
+		log.Fatal("Usage: cli <command> [args..]")
+		return
 	}
 
-	fmt.Printf("Read config: %+v\n", cfg)
+	cmdName := os.Args[1]
+	cmdArgs := os.Args[2:]
+
+	err = cmds.run(s, command{Name: cmdName, Args: cmdArgs})
+	if err != nil {
+		log.Fatal(err)
+	}
 }
