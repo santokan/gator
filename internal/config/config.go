@@ -3,6 +3,7 @@ package config
 import (
 	"encoding/json"
 	"os"
+	"path/filepath"
 )
 
 const configFileName = ".gatorconfig.json"
@@ -18,10 +19,23 @@ func (c *Config) SetUser(user string) error {
 	return write(*c)
 }
 
+func getConfigFilePath() (string, error) {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+	fullPath := filepath.Join(home, configFileName)
+	return fullPath, nil
+}
+
 // read config file from json file and return config struct
 func Read() (Config, error) {
 	var config Config
-	file, err := os.Open(configFileName)
+	fullPath, err := getConfigFilePath()
+	if err != nil {
+		return config, err
+	}
+	file, err := os.Open(fullPath)
 	if err != nil {
 		return config, err
 	}
@@ -38,7 +52,11 @@ func Read() (Config, error) {
 
 // write config struct to json file
 func write(cfg Config) error {
-	file, err := os.Create(configFileName)
+	fullPath, err := getConfigFilePath()
+	if err != nil {
+		return err
+	}
+	file, err := os.Create(fullPath)
 	if err != nil {
 		return err
 	}
