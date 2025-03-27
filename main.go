@@ -32,6 +32,7 @@ func main() {
 	cmds := &commands{registeredCommands: make(map[string]func(*state, command) error)}
 	cmds.register("login", handlerLogin)
 	cmds.register("register", handlerRegister)
+	cmds.register("reset", handlerReset)
 
 	if len(os.Args) < 2 {
 		log.Fatal("Usage: gator <command> [args..]")

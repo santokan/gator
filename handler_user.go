@@ -71,6 +71,18 @@ func handlerRegister(s *state, c command) error {
 	return nil
 }
 
+func handlerReset(s *state, c command) error {
+	if len(c.Args) != 0 {
+		return fmt.Errorf("usage: reset")
+	}
+	err := s.db.DeleteAllUsers(context.Background())
+	if err != nil {
+		return fmt.Errorf("error resetting database: %v", err)
+	}
+	log.Println("Database has been reset.")
+	return nil
+}
+
 func printUser(user database.User) {
 	fmt.Printf(" * ID:      %v\n", user.ID)
 	fmt.Printf(" * Name:    %v\n", user.Name)
