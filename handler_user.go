@@ -88,7 +88,7 @@ func handlerUsers(s *state, c command) error {
 		return fmt.Errorf("usage: users")
 	}
 
-	users := []string{}
+	var users []string
 
 	users, err := s.db.GetUsers(context.Background())
 	if err != nil {
@@ -103,6 +103,20 @@ func handlerUsers(s *state, c command) error {
 		}
 	}
 
+	return nil
+}
+
+func handlerAgg(s *state, c command) error {
+	if len(c.Args) != 0 {
+		return fmt.Errorf("usage: agg")
+	}
+
+	rssfeed, err := fetchFeed(context.Background(), "https://www.wagslane.dev/index.xml")
+	if err != nil {
+		return fmt.Errorf("error fetching feed: %v", err)
+	}
+
+	fmt.Printf("RSS Feed: %+v\n", rssfeed)
 	return nil
 }
 
