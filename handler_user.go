@@ -71,18 +71,6 @@ func handlerRegister(s *state, c command) error {
 	return nil
 }
 
-func handlerReset(s *state, c command) error {
-	if len(c.Args) != 0 {
-		return fmt.Errorf("usage: reset")
-	}
-	err := s.db.DeleteAllUsers(context.Background())
-	if err != nil {
-		return fmt.Errorf("error resetting database: %v", err)
-	}
-	log.Println("Database has been reset.")
-	return nil
-}
-
 func handlerUsers(s *state, c command) error {
 	if len(c.Args) != 0 {
 		return fmt.Errorf("usage: users")
@@ -103,20 +91,6 @@ func handlerUsers(s *state, c command) error {
 		}
 	}
 
-	return nil
-}
-
-func handlerAgg(s *state, c command) error {
-	if len(c.Args) != 0 {
-		return fmt.Errorf("usage: agg")
-	}
-
-	rssfeed, err := fetchFeed(context.Background(), "https://www.wagslane.dev/index.xml")
-	if err != nil {
-		return fmt.Errorf("error fetching feed: %v", err)
-	}
-
-	fmt.Printf("RSS Feed: %+v\n", rssfeed)
 	return nil
 }
 

@@ -16,3 +16,6 @@ DELETE FROM users;
 
 -- name: GetUsers :many
 SELECT name FROM users;
+
+-- name: GetUserIDbyUsername :one
+SELECT id FROM users WHERE name = $1;
