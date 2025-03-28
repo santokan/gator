@@ -34,5 +34,38 @@ func handlerAddFeed(s *state, c command) error {
 	}
 
 	fmt.Printf("Feed added successfully: Name=%s, URL=%s\n", feed.Name, feed.Url)
+
+	printFeed(feed)
+
 	return nil
+}
+
+func handlerFeeds(s *state, c command) error {
+	if len(c.Args) != 0 {
+		return fmt.Errorf("usage: feeds")
+	}
+
+	feeds, err := s.db.GetFeeds(context.Background())
+	if err != nil {
+		return fmt.Errorf("unable to get feeds: %v", err)
+	}
+
+	fmt.Println("List of feeds:")
+	for _, feed := range feeds {
+		fmt.Printf("* Feed name:        %s\n", feed.Name)
+		fmt.Printf("* Feed URL:         %s\n", feed.Url)
+		fmt.Printf("* Username:         %s\n", feed.Username)
+		fmt.Println()
+	}
+
+	return nil
+}
+
+func printFeed(feed database.Feed) {
+	fmt.Printf("* ID:            %s\n", feed.ID)
+	fmt.Printf("* Created:       %v\n", feed.CreatedAt)
+	fmt.Printf("* Updated:       %v\n", feed.UpdatedAt)
+	fmt.Printf("* Name:          %s\n", feed.Name)
+	fmt.Printf("* URL:           %s\n", feed.Url)
+	fmt.Printf("* UserID:        %s\n", feed.UserID)
 }
