@@ -26,7 +26,7 @@ func handlerAddFeed(s *state, c command, user database.User) error {
 		UserID:    user.ID,
 	})
 	if err != nil {
-		return fmt.Errorf("unable to add feed: %v", err)
+		return fmt.Errorf("unable to add feed: %w", err)
 	}
 
 	// Automatically create a feed follow record
@@ -39,11 +39,13 @@ func handlerAddFeed(s *state, c command, user database.User) error {
 		FeedID:    feed.ID,
 	})
 	if err != nil {
-		return fmt.Errorf("unable to create feed follow: %v", err)
+		return fmt.Errorf("unable to create feed follow: %w", err)
 	}
 
-	fmt.Printf("Feed added successfully: Name=%s, URL=%s\n", feed.Name, feed.Url)
-	fmt.Printf("Automatically following feed '%s' for user '%s'\n", feed.Name, s.cfg.CurrentUserName)
+	fmt.Println("Feed added successfully:")
+	printFeed(feed, user)
+	fmt.Println("")
+	fmt.Println("Feed follow created successfully:")
 
 	printFeed(feed, user)
 
@@ -57,7 +59,7 @@ func handlerFeeds(s *state, c command) error {
 
 	feeds, err := s.db.GetFeeds(context.Background())
 	if err != nil {
-		return fmt.Errorf("unable to get feeds: %v", err)
+		return fmt.Errorf("unable to get feeds: %w", err)
 	}
 
 	if len(feeds) == 0 {
@@ -69,7 +71,7 @@ func handlerFeeds(s *state, c command) error {
 	for _, feed := range feeds {
 		user, err := s.db.GetUserById(context.Background(), feed.UserID)
 		if err != nil {
-			return fmt.Errorf("unable to get user for feed '%s': %v", feed.Name, err)
+			return fmt.Errorf("unable to get user for feed '%s': %w", feed.Name, err)
 		}
 		printFeed(feed, user)
 	}

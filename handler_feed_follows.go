@@ -17,7 +17,7 @@ func handlerFollow(s *state, c command, user database.User) error {
 	feedURL := c.Args[0]
 	feed, err := s.db.GetFeedByURL(context.Background(), feedURL)
 	if err != nil {
-		return fmt.Errorf("unable to find feed with URL %s: %v", feedURL, err)
+		return fmt.Errorf("unable to find feed with URL '%s': %w", feedURL, err)
 	}
 
 	followID := uuid.New()
@@ -31,11 +31,34 @@ func handlerFollow(s *state, c command, user database.User) error {
 		FeedID:    feed.ID,
 	})
 	if err != nil {
-		return fmt.Errorf("unable to create feed follow: %v", err)
+		return fmt.Errorf("unable to create feed follow: %w", err)
 	}
 
 	fmt.Println("Feed follow created successfully:")
 	printFollowFeed(feedFollowRow.UserName, feedFollowRow.FeedName)
+	return nil
+}
+
+func handlerUnfollow(s *state, c command, user database.User) error {
+	if len(c.Args) != 1 {
+		return fmt.Errorf("usage: unfollow <feed_url>")
+	}
+
+	feedURL := c.Args[0]
+	feed, err := s.db.GetFeedByURL(context.Background(), feedURL)
+	if err != nil {
+		return fmt.Errorf("unable to find feed with URL '%s': %w", feedURL, err)
+	}
+
+	err = s.db.DeleteFeedFollow(context.Background(), database.DeleteFeedFollowParams{
+		UserID: user.ID,
+		FeedID: feed.ID,
+	})
+	if err != nil {
+		return fmt.Errorf("unable to unfollow feed: %w", err)
+	}
+
+	fmt.Printf("Successfully unfollowed feed '%s' for user '%s'\n", feedURL, user.Name)
 	return nil
 }
 
@@ -46,7 +69,7 @@ func handlerFollowing(s *state, c command, user database.User) error {
 
 	follows, err := s.db.GetFeedFollowsForUser(context.Background(), user.ID)
 	if err != nil {
-		return fmt.Errorf("unable to get feed follows for user '%s': %v", s.cfg.CurrentUserName, err)
+		return fmt.Errorf("unable to get feed follows for user '%s': %w", s.cfg.CurrentUserName, err)
 	}
 
 	if len(follows) == 0 {
@@ -56,9 +79,7 @@ func handlerFollowing(s *state, c command, user database.User) error {
 
 	fmt.Println("List of feeds followed by the user:")
 	for _, follow := range follows {
-		fmt.Printf("* Feed name:        %s\n", follow.FeedName)
-		fmt.Printf("* Feed URL:         %s\n", follow.FeedID)
-		fmt.Printf("* Username:         %s\n", follow.UserName)
+		printFollowFeed(follow.UserName, follow.FeedName)
 		fmt.Println()
 	}
 
@@ -67,5 +88,5 @@ func handlerFollowing(s *state, c command, user database.User) error {
 
 func printFollowFeed(username, feedname string) {
 	fmt.Printf("* User:        %s\n", username)
-	fmt.Printf("* Feed:			   %s\n", feedname)
+	fmt.Printf("* Feed:        %s\n", feedname)
 }

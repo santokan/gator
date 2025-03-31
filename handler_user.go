@@ -19,7 +19,7 @@ func handlerLogin(s *state, c command) error {
 	username := c.Args[0]
 	err := s.cfg.SetUser(username)
 	if err != nil {
-		return fmt.Errorf("error setting user: %v", err)
+		return fmt.Errorf("error setting user: %w", err)
 	}
 
 	_, err = s.db.GetUser(context.Background(), username)
@@ -62,7 +62,7 @@ func handlerRegister(s *state, c command) error {
 
 	err = s.cfg.SetUser(username)
 	if err != nil {
-		return fmt.Errorf("error setting user: %v", err)
+		return fmt.Errorf("error setting user: %w", err)
 	}
 
 	log.Printf("User '%s' has been successfully registered.", username)
@@ -78,7 +78,7 @@ func handlerUsers(s *state, c command) error {
 
 	users, err := s.db.GetUsers(context.Background())
 	if err != nil {
-		return fmt.Errorf("error fetching users: %v", err)
+		return fmt.Errorf("error fetching users: %w", err)
 	}
 
 	for _, user := range users {

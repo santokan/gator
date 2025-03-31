@@ -12,7 +12,7 @@ func handlerReset(s *state, c command) error {
 	}
 	err := s.db.DeleteAllUsers(context.Background())
 	if err != nil {
-		return fmt.Errorf("error resetting database: %v", err)
+		return fmt.Errorf("error resetting database: %w", err)
 	}
 	log.Println("Database has been reset.")
 	return nil

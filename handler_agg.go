@@ -12,7 +12,7 @@ func handlerAgg(s *state, c command) error {
 
 	rssfeed, err := fetchFeed(context.Background(), "https://www.wagslane.dev/index.xml")
 	if err != nil {
-		return fmt.Errorf("error fetching feed: %v", err)
+		return fmt.Errorf("error fetching feed: %w", err)
 	}
 
 	fmt.Printf("RSS Feed: %+v\n", rssfeed)
