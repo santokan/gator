@@ -9,17 +9,13 @@ import (
 	"github.com/santokan/gator/internal/database"
 )
 
-func handlerAddFeed(s *state, c command) error {
+func handlerAddFeed(s *state, c command, user database.User) error {
 	if len(c.Args) != 2 {
 		return fmt.Errorf("usage: addfeed <name> <url>")
 	}
 
 	feedID := uuid.New()
 	now := time.Now()
-	user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
-	if err != nil {
-		return fmt.Errorf("unable to get userID if user '%s': %v", s.cfg.CurrentUserName, err)
-	}
 
 	feed, err := s.db.AddFeed(context.Background(), database.AddFeedParams{
 		ID:        feedID,
