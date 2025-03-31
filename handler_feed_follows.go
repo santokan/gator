@@ -20,7 +20,7 @@ func handlerFollow(s *state, c command) error {
 		return fmt.Errorf("unable to find feed with URL %s: %v", feedURL, err)
 	}
 
-	userID, err := s.db.GetUserIDbyUsername(context.Background(), s.cfg.CurrentUserName)
+	user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
 	if err != nil {
 		return fmt.Errorf("unable to get userID for user '%s': %v", s.cfg.CurrentUserName, err)
 	}
@@ -32,7 +32,7 @@ func handlerFollow(s *state, c command) error {
 		ID:        followID,
 		CreatedAt: now,
 		UpdatedAt: now,
-		UserID:    userID,
+		UserID:    user.ID,
 		FeedID:    feed.ID,
 	})
 	if err != nil {
@@ -48,12 +48,12 @@ func handlerFollowing(s *state, c command) error {
 		return fmt.Errorf("usage: following")
 	}
 
-	userID, err := s.db.GetUserIDbyUsername(context.Background(), s.cfg.CurrentUserName)
+	user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
 	if err != nil {
 		return fmt.Errorf("unable to get userID for user '%s': %v", s.cfg.CurrentUserName, err)
 	}
 
-	follows, err := s.db.GetFeedFollowsForUser(context.Background(), userID)
+	follows, err := s.db.GetFeedFollowsForUser(context.Background(), user.ID)
 	if err != nil {
 		return fmt.Errorf("unable to get feed follows for user '%s': %v", s.cfg.CurrentUserName, err)
 	}

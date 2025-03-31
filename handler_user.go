@@ -76,15 +76,13 @@ func handlerUsers(s *state, c command) error {
 		return fmt.Errorf("usage: users")
 	}
 
-	var users []string
-
 	users, err := s.db.GetUsers(context.Background())
 	if err != nil {
 		return fmt.Errorf("error fetching users: %v", err)
 	}
 
 	for _, user := range users {
-		if user == s.cfg.CurrentUserName {
+		if user.Name == s.cfg.CurrentUserName {
 			fmt.Printf(" * %v (current)\n", user)
 		} else {
 			fmt.Printf(" * %v\n", user)
