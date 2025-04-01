@@ -29,6 +29,8 @@ func handlerAddFeed(s *state, c command, user database.User) error {
 		return fmt.Errorf("unable to add feed: %w", err)
 	}
 
+	fmt.Println("Feed added successfully:")
+
 	// Automatically create a feed follow record
 	followID := uuid.New()
 	_, err = s.db.CreateFeedFollow(context.Background(), database.CreateFeedFollowParams{
@@ -42,12 +44,10 @@ func handlerAddFeed(s *state, c command, user database.User) error {
 		return fmt.Errorf("unable to create feed follow: %w", err)
 	}
 
-	fmt.Println("Feed added successfully:")
+	fmt.Println("")
 	printFeed(feed, user)
 	fmt.Println("")
-	fmt.Println("Feed follow created successfully:")
-
-	printFeed(feed, user)
+	fmt.Println("Feed follow created successfully!")
 
 	return nil
 }
